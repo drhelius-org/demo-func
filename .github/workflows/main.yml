@@ -1,7 +1,7 @@
 name: Build and Deploy
 
 env:
-  AZURE_FUNCTIONAPP_NAME: 'demo func'
+  AZURE_FUNCTIONAPP_NAME: 'drhelius-demo-func'
   POM_XML_DIRECTORY: '.'
   JAVA_VERSION: '11'
 
