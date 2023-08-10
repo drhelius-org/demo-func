@@ -1,0 +1,36 @@
+name: Swap Dev to Pro
+
+env:
+  AZURE_FUNCTIONAPP_NAME: 'drhelius-demo-func'
+
+on:
+  workflow_dispatch:
+  
+permissions:
+  id-token: write
+  contents: read
+  
+jobs:
+  swap:
+
+    runs-on: windows-latest
+    environment: production
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Log into Azure
+        uses: azure/login@v1
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Swap slots
+        uses: azure/CLI@v1
+        with:
+          inlineScript: |
+
+           az functionapp deployment slot swap -n MyUniqueApp --slot staging \
+            --target-slot ${{ env.AZURE_FUNCTIONAPP_NAME }}          
+

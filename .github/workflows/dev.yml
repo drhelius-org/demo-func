@@ -1,4 +1,4 @@
-name: Build and Deploy
+name: Build and Deploy to Dev
 
 env:
   AZURE_FUNCTIONAPP_NAME: 'drhelius-demo-func'
@@ -13,7 +13,7 @@ permissions:
   contents: read
   
 jobs:
-  deploy:
+  deploy-to-dev:
 
     runs-on: windows-latest
     environment: production
@@ -33,7 +33,7 @@ jobs:
         with:
           java-version: ${{ env.JAVA_VERSION }}
 
-      - name: 'Restore Project Dependencies Using Mvn'
+      - name: 'Build Using Mvn'
         shell: pwsh
         run: |
           pushd './${{ env.POM_XML_DIRECTORY }}'
@@ -47,4 +47,5 @@ jobs:
           app-name: ${{ env.AZURE_FUNCTIONAPP_NAME }}
           package: '${{ env.POM_XML_DIRECTORY }}'
           respect-pom-xml: true
+          slot-name: 'dev'
 
