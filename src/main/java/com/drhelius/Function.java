@@ -17,9 +17,9 @@ public class Function {
     private static HttpStatus status = HttpStatus.OK;
     private static boolean isWarm = false;
 
-    private synchronized void warm(int milliseconds, ExecutionContext context) {
+    private static synchronized void warm(int milliseconds, ExecutionContext context) {
         if (!isWarm) {
-            context.getLogger().info("Waiting 5 seconds to warm up");
+            context.getLogger().info("Waiting " + milliseconds + " milliseconds to warm up");
 
             try {
                 Thread.sleep(milliseconds);
@@ -27,7 +27,7 @@ public class Function {
                 e.printStackTrace();
             }
 
-            context.getLogger().info("Waited for 5 seconds");
+            context.getLogger().info("Waited for " + milliseconds + " milliseconds");
 
             isWarm = true;            
         }
@@ -36,7 +36,7 @@ public class Function {
     @FunctionName("Warmup")
     public void warmup( @WarmupTrigger Object warmupContext, ExecutionContext context) {
         context.getLogger().info("Function App instance is warming up 🌞🌞🌞");
-        this.warm(5000, context); 
+        warm(30000, context); 
         context.getLogger().info("Function App instance is warm 🌞🌞🌞");
     }
 
@@ -55,7 +55,7 @@ public class Function {
         final String query = request.getQueryParameters().get("name");
         final String name = request.getBody().orElse(query);
 
-        this.warm(5000, context);
+        warm(30000, context);
 
         if (name == null) {
             return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body("Please pass a name on the query string or in the request body").build();
