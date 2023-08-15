@@ -13,7 +13,7 @@ permissions:
 jobs:
   swap:
 
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     environment: production
 
     steps:
