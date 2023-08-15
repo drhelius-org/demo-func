@@ -29,6 +29,6 @@ jobs:
         with:
           inlineScript: |
 
-           az functionapp deployment slot swap -n ${{ env.AZURE_FUNCTIONAPP_NAME }} --slot dev \
+           az functionapp deployment slot swap -g functions -n ${{ env.AZURE_FUNCTIONAPP_NAME }} --slot dev \
             --target-slot production          
 
