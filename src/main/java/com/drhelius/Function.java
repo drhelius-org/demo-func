@@ -15,47 +15,31 @@ import java.util.Optional;
 public class Function {
 
     private static HttpStatus status = HttpStatus.OK;
-    private static boolean isWarm = false;
-
-    private static synchronized void warm(int milliseconds, ExecutionContext context) {
-        if (!isWarm) {
-            context.getLogger().info("Waiting " + milliseconds + " milliseconds to warm up");
-
-            try {
-                Thread.sleep(milliseconds);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-
-            context.getLogger().info("Waited for " + milliseconds + " milliseconds");
-
-            isWarm = true;            
-        }
-    }
+    private static InitClient initClient = new InitClient();
+    private static LazyClient lazyClient = new LazyClient();
 
     @FunctionName("Warmup")
     public void warmup( @WarmupTrigger Object warmupContext, ExecutionContext context) {
         context.getLogger().info("Function App instance is warming up 🌞🌞🌞");
-        warm(30000, context); 
+        lazyClient.init();
         context.getLogger().info("Function App instance is warm 🌞🌞🌞");
     }
 
-    @FunctionName("Demo")
-    public HttpResponseMessage demo(
+    @FunctionName("RunInit")
+    public HttpResponseMessage runInit(
             @HttpTrigger(
                 name = "req",
                 methods = {HttpMethod.GET, HttpMethod.POST},
                 authLevel = AuthorizationLevel.ANONYMOUS,
-                route = "demo")
+                route = "runinit")
                 HttpRequestMessage<Optional<String>> request,
             final ExecutionContext context) {
-        context.getLogger().info("Java HTTP trigger processed a request.");
+        context.getLogger().info("RunInit HTTP trigger processing a request...");
 
-        // Parse query parameter
         final String query = request.getQueryParameters().get("name");
         final String name = request.getBody().orElse(query);
 
-        warm(30000, context);
+        initClient.run();
 
         if (name == null) {
             return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body("Please pass a name on the query string or in the request body").build();
@@ -63,6 +47,30 @@ public class Function {
             return request.createResponseBuilder(HttpStatus.OK).body("Hello, " + name).build();
         }
     }
+
+    @FunctionName("RunLazy")
+    public HttpResponseMessage runLazy(
+            @HttpTrigger(
+                name = "req",
+                methods = {HttpMethod.GET, HttpMethod.POST},
+                authLevel = AuthorizationLevel.ANONYMOUS,
+                route = "runlazy")
+                HttpRequestMessage<Optional<String>> request,
+            final ExecutionContext context) {
+        context.getLogger().info("RunLazy HTTP trigger processing a request...");
+
+        final String query = request.getQueryParameters().get("name");
+        final String name = request.getBody().orElse(query);
+
+        lazyClient.run();
+
+        if (name == null) {
+            return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body("Please pass a name on the query string or in the request body").build();
+        } else {
+            return request.createResponseBuilder(HttpStatus.OK).body("Hello, " + name).build();
+        }
+    }
+
 
     @FunctionName("ChangeStatus")
     public HttpResponseMessage changeStatus(
@@ -73,7 +81,7 @@ public class Function {
                 route = "status")
                 HttpRequestMessage<Optional<String>> request,
             final ExecutionContext context) {
-        context.getLogger().info("Java HTTP trigger processed a request.");
+        context.getLogger().info("ChangeStatus HTTP trigger processing a request...");
 
         final String query = request.getQueryParameters().get("code");
         final String statusString = request.getBody().orElse(query);
@@ -87,6 +95,20 @@ public class Function {
         return request.createResponseBuilder(HttpStatus.OK).body("Status changed to " + status.toString()).build();
     }
 
+    @FunctionName("CustomHealth")
+    public HttpResponseMessage customHealth(
+            @HttpTrigger(
+                name = "req",
+                methods = {HttpMethod.GET, HttpMethod.POST},
+                authLevel = AuthorizationLevel.ANONYMOUS,
+                route = "customhealth")
+                HttpRequestMessage<Optional<String>> request,
+            final ExecutionContext context) {
+        context.getLogger().info("CustomHealth HTTP trigger processing a request...");
+
+        return request.createResponseBuilder(status).body("Status is " + status.toString()).build();
+    }
+
     @FunctionName("Health")
     public HttpResponseMessage health(
             @HttpTrigger(
@@ -96,8 +118,13 @@ public class Function {
                 route = "health")
                 HttpRequestMessage<Optional<String>> request,
             final ExecutionContext context) {
-        context.getLogger().info("Java HTTP trigger processed a request.");
+        context.getLogger().info("Health HTTP trigger processing a request...");
 
-        return request.createResponseBuilder(status).body("Status is " + status.toString()).build();
+        HttpStatus ret = initClient.isReady() ? HttpStatus.OK : HttpStatus.INTERNAL_SERVER_ERROR;
+        
+        context.getLogger().info("Health is " + ret.toString());
+
+        return request.createResponseBuilder(ret).body("Status is " + ret.toString()).build();
     }    
 }
+
