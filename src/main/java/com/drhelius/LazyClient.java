@@ -4,12 +4,12 @@ public class LazyClient {
 
     private boolean isReady = false;
     
-    public boolean isReady() {
+    public synchronized boolean isReady() {
         return isReady;
     }
 
     public LazyClient() {
-
+        System.out.println("LazyClient constructor executed.");
     }
 
     public void run() {

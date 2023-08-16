@@ -4,7 +4,7 @@ public class InitClient {
 
     private boolean isReady = false;
     
-    public boolean isReady() {
+    public synchronized boolean isReady() {
         return isReady;
     }
 
