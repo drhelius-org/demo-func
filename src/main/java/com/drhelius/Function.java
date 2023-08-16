@@ -15,7 +15,6 @@ import java.util.Optional;
 public class Function {
 
     private static HttpStatus status = HttpStatus.OK;
-    private static InitClient initClient = new InitClient();
     private static LazyClient lazyClient = new LazyClient();
 
     @FunctionName("Warmup")
@@ -25,39 +24,16 @@ public class Function {
         context.getLogger().info("Function App instance is warm 🌞🌞🌞");
     }
 
-    @FunctionName("RunInit")
-    public HttpResponseMessage runInit(
+    @FunctionName("Run")
+    public HttpResponseMessage run(
             @HttpTrigger(
                 name = "req",
                 methods = {HttpMethod.GET, HttpMethod.POST},
                 authLevel = AuthorizationLevel.ANONYMOUS,
-                route = "runinit")
+                route = "run")
                 HttpRequestMessage<Optional<String>> request,
             final ExecutionContext context) {
-        context.getLogger().info("RunInit HTTP trigger processing a request...");
-
-        final String query = request.getQueryParameters().get("name");
-        final String name = request.getBody().orElse(query);
-
-        initClient.run();
-
-        if (name == null) {
-            return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body("Please pass a name on the query string or in the request body").build();
-        } else {
-            return request.createResponseBuilder(HttpStatus.OK).body("Hello, " + name).build();
-        }
-    }
-
-    @FunctionName("RunLazy")
-    public HttpResponseMessage runLazy(
-            @HttpTrigger(
-                name = "req",
-                methods = {HttpMethod.GET, HttpMethod.POST},
-                authLevel = AuthorizationLevel.ANONYMOUS,
-                route = "runlazy")
-                HttpRequestMessage<Optional<String>> request,
-            final ExecutionContext context) {
-        context.getLogger().info("RunLazy HTTP trigger processing a request...");
+        context.getLogger().info("Run HTTP trigger processing a request...");
 
         final String query = request.getQueryParameters().get("name");
         final String name = request.getBody().orElse(query);
@@ -71,17 +47,16 @@ public class Function {
         }
     }
 
-
-    @FunctionName("ChangeStatus")
-    public HttpResponseMessage changeStatus(
+    @FunctionName("ChangeHealth")
+    public HttpResponseMessage changeHealth(
             @HttpTrigger(
                 name = "req",
                 methods = {HttpMethod.GET, HttpMethod.POST},
                 authLevel = AuthorizationLevel.ANONYMOUS,
-                route = "status")
+                route = "changehealth")
                 HttpRequestMessage<Optional<String>> request,
             final ExecutionContext context) {
-        context.getLogger().info("ChangeStatus HTTP trigger processing a request...");
+        context.getLogger().info("ChangeHealth HTTP trigger processing a request...");
 
         final String query = request.getQueryParameters().get("code");
         final String statusString = request.getBody().orElse(query);
@@ -92,7 +67,7 @@ public class Function {
             status = HttpStatus.valueOf(Integer.parseInt(statusString));
         }
 
-        return request.createResponseBuilder(HttpStatus.OK).body("Status changed to " + status.toString()).build();
+        return request.createResponseBuilder(HttpStatus.OK).body("CustomHealth changed to " + status.toString()).build();
     }
 
     @FunctionName("CustomHealth")
@@ -106,7 +81,7 @@ public class Function {
             final ExecutionContext context) {
         context.getLogger().info("CustomHealth HTTP trigger processing a request...");
 
-        return request.createResponseBuilder(status).body("Status is " + status.toString()).build();
+        return request.createResponseBuilder(status).body("CustomHealth is " + status.toString()).build();
     }
 
     @FunctionName("Health")
@@ -120,7 +95,7 @@ public class Function {
             final ExecutionContext context) {
         context.getLogger().info("Health HTTP trigger processing a request...");
 
-        HttpStatus ret = initClient.isReady() ? HttpStatus.OK : HttpStatus.INTERNAL_SERVER_ERROR;
+        HttpStatus ret = lazyClient.isReady() ? HttpStatus.OK : HttpStatus.INTERNAL_SERVER_ERROR;
         
         context.getLogger().info("Health is " + ret.toString());
 

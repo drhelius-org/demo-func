@@ -18,7 +18,7 @@ public class LazyClient {
     }
 
     public synchronized void init() {
-        int milliseconds = 30000;
+        int milliseconds = 10000;
 
         if (!isReady) {
             System.out.println("LazyClient Waiting " + milliseconds + " milliseconds to initialize the client");
