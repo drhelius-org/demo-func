@@ -32,7 +32,7 @@ public class MainFunction {
         if (name == null) {
             return request.createResponseBuilder(HttpStatus.OK).body("Please pass a name on the query string or in the request body").build();
         } else {
-            return request.createResponseBuilder(HttpStatus.OK).body("Bye, " + name).build();
+            return request.createResponseBuilder(HttpStatus.OK).body("Hi, " + name).build();
         }
     }
 }
