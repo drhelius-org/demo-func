@@ -8,9 +8,9 @@ public class WarmupFunction {
 
     @FunctionName("Warmup")
     public void warmup( @WarmupTrigger Object warmupContext, ExecutionContext context) {
-        context.getLogger().info("Function App instance is warming up 🌞🌞🌞");
+        context.getLogger().info("## Function App instance is warming up 🌞🌞🌞");
         LazyClient.getInstance().run();
-        context.getLogger().info("Function App instance is warm 🌞🌞🌞");
+        context.getLogger().info("## Function App instance is warm 🌞🌞🌞");
     }
 }
 

@@ -22,7 +22,7 @@ public class MainFunction {
                 route = "run")
                 HttpRequestMessage<Optional<String>> request,
             final ExecutionContext context) {
-        context.getLogger().info("Run HTTP trigger processing a request...");
+        context.getLogger().info("## Run HTTP trigger processing a request...");
 
         final String query = request.getQueryParameters().get("name");
         final String name = request.getBody().orElse(query);

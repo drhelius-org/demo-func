@@ -24,11 +24,11 @@ public class HealthFunctions {
                 route = "health")
                 HttpRequestMessage<Optional<String>> request,
             final ExecutionContext context) {
-        context.getLogger().info("Health HTTP trigger processing a request...");
+        context.getLogger().info("## Health HTTP trigger processing a request...");
 
         HttpStatus ret = LazyClient.isReady() ? HttpStatus.OK : HttpStatus.INTERNAL_SERVER_ERROR;
         
-        context.getLogger().info("Health is " + ret.toString());
+        context.getLogger().info("## Health is " + ret.toString());
 
         return request.createResponseBuilder(ret).body("Status is " + ret.toString()).build();
     }    
@@ -42,7 +42,7 @@ public class HealthFunctions {
                 route = "customhealth")
                 HttpRequestMessage<Optional<String>> request,
             final ExecutionContext context) {
-        context.getLogger().info("CustomHealth HTTP trigger processing a request...");
+        context.getLogger().info("## CustomHealth HTTP trigger processing a request...");
 
         return request.createResponseBuilder(status).body("CustomHealth is " + status.toString()).build();
     }
@@ -56,7 +56,7 @@ public class HealthFunctions {
                 route = "changehealth")
                 HttpRequestMessage<Optional<String>> request,
             final ExecutionContext context) {
-        context.getLogger().info("ChangeHealth HTTP trigger processing a request...");
+        context.getLogger().info("## ChangeHealth HTTP trigger processing a request...");
 
         final String query = request.getQueryParameters().get("code");
         final String statusString = request.getBody().orElse(query);

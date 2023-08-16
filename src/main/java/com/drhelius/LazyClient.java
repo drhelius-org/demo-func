@@ -10,14 +10,14 @@ public class LazyClient {
     }
 
     private LazyClient() {
-        System.out.println("LazyClient constructor executing...");
+        System.out.println("## LazyClient constructor executing...");
         init();
-        System.out.println("LazyClient constructor executed.");
+        System.out.println("## LazyClient constructor executed.");
     }
 
     private void init() {
         int milliseconds = 20000;
-        System.out.println("LazyClient Waiting " + milliseconds + " milliseconds to initialize the client");
+        System.out.println("## LazyClient Waiting " + milliseconds + " milliseconds to initialize the client");
 
         try {
             Thread.sleep(milliseconds);
@@ -27,7 +27,7 @@ public class LazyClient {
 
         isReady = true;
 
-        System.out.println("LazyClient Waited for " + milliseconds + " milliseconds");
+        System.out.println("## LazyClient Waited for " + milliseconds + " milliseconds");
     }
 
     public static LazyClient getInstance() {
@@ -47,6 +47,6 @@ public class LazyClient {
     }
 
     public void run() {
-        System.out.println("LazyClient executed");
+        System.out.println("## LazyClient executed");
     }    
 }
