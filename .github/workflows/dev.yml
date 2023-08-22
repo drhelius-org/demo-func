@@ -1,9 +1,11 @@
 name: Build and Deploy to Dev
 
 env:
-  AZURE_FUNCTIONAPP_NAME: 'drhelius-demo-func'
+  AZURE_FUNCTIONAPP_NAME: 'demo-func-drhelius'
+  SLOT_NAME: 'development'
   POM_XML_DIRECTORY: '.'
-  JAVA_VERSION: '11'
+  JAVA_VERSION: '17'
+  JAVA_DISTRIBUTION: 'microsoft'
 
 on:
   workflow_dispatch:
@@ -15,7 +17,7 @@ permissions:
 jobs:
   deploy-to-dev:
 
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     environment: production
 
     steps:
@@ -32,7 +34,7 @@ jobs:
         uses: actions/setup-java@v3
         with:
           java-version: ${{ env.JAVA_VERSION }}
-          distribution: 'microsoft'
+          distribution: ${{ env.JAVA_DISTRIBUTION }}
 
       - name: 'Build Using Mvn'
         shell: pwsh
@@ -48,5 +50,5 @@ jobs:
           app-name: ${{ env.AZURE_FUNCTIONAPP_NAME }}
           package: '${{ env.POM_XML_DIRECTORY }}'
           respect-pom-xml: true
-          slot-name: 'dev'
+          slot-name: ${{ env.SLOT_NAME }}
 

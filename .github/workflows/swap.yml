@@ -1,7 +1,10 @@
 name: Swap Dev to Pro
 
 env:
-  AZURE_FUNCTIONAPP_NAME: 'drhelius-demo-func'
+  AZURE_FUNCTIONAPP_NAME: 'demo-func-drhelius'
+  RESOURCE_GROUP: 'functions'
+  SOURCE_SLOT: 'development'
+  TARGET_SLOT: 'production'
 
 on:
   workflow_dispatch:
@@ -29,6 +32,9 @@ jobs:
         with:
           inlineScript: |
 
-           az functionapp deployment slot swap -g functions -n ${{ env.AZURE_FUNCTIONAPP_NAME }} --slot dev \
-            --target-slot production          
+           az functionapp deployment slot swap \
+             -g ${{ env.RESOURCE_GROUP }} \
+             -n ${{ env.AZURE_FUNCTIONAPP_NAME }} \
+             --slot ${{ env.SOURCE_SLOT }} \
+            --target-slot ${{ env.TARGET_SLOT }}          
 
